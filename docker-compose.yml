@@ -6,7 +6,7 @@ services:
       kompose.volume.size: 1Gi
     container_name: vmaas-database
     build: ./database
-    image: vmaas/database:latest
+    image: vmaas/database:0.3
     restart: unless-stopped
     env_file:
       - ./conf/database-connection.env
@@ -20,7 +20,7 @@ services:
       kompose.volume.size: 4Gi
     container_name: vmaas-reposcan
     build: ./reposcan
-    image: vmaas/reposcan:latest
+    image: vmaas/reposcan:0.3
     restart: unless-stopped
     env_file:
       - ./conf/database-connection.env
@@ -35,7 +35,7 @@ services:
   webapp:
     container_name: vmaas-webapp
     build: ./webapp
-    image: vmaas/webapp:latest
+    image: vmaas/webapp:0.3
     restart: unless-stopped
     env_file:
       - ./conf/database-connection.env
@@ -48,7 +48,7 @@ services:
   apidoc:
     container_name: vmaas-apidoc
     build: ./apidoc
-    image: vmaas/apidoc:latest
+    image: vmaas/apidoc:0.3
     restart: unless-stopped
     env_file:
       - ./conf/apidoc.env
