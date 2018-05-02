@@ -382,6 +382,9 @@ CREATE TABLE IF NOT EXISTS package (
     REFERENCES checksum_type (id)
 )TABLESPACE pg_default;
 
+CREATE INDEX ON package(name);
+CREATE INDEX ON package(evr_id);
+
 
 -- -----------------------------------------------------
 -- Table vmaas.product
@@ -464,6 +467,8 @@ CREATE TABLE IF NOT EXISTS pkg_repo (
     REFERENCES repo (id)
 )TABLESPACE pg_default;
 
+CREATE INDEX ON pkg_repo(repo_id);
+
 
 -- -----------------------------------------------------
 -- Table vmaas.severity
@@ -524,6 +529,8 @@ CREATE TABLE IF NOT EXISTS errata_repo (
     REFERENCES repo (id)
 )TABLESPACE pg_default;
 
+CREATE INDEX ON errata_repo(repo_id);
+
 
 -- -----------------------------------------------------
 -- Table vmaas.pkg_errata
@@ -539,6 +546,8 @@ CREATE TABLE IF NOT EXISTS pkg_errata (
     FOREIGN KEY (errata_id)
     REFERENCES errata (id)
 )TABLESPACE pg_default;
+
+CREATE INDEX ON pkg_errata(errata_id);
 
 
 -- -----------------------------------------------------
@@ -585,6 +594,9 @@ CREATE TABLE IF NOT EXISTS cve_cwe (
     REFERENCES cwe (id)
 )TABLESPACE pg_default;
 
+CREATE INDEX ON cve_cwe(cwe_id);
+
+
 -- -----------------------------------------------------
 -- Table vmaas.errata_cve
 -- -----------------------------------------------------
@@ -599,6 +611,9 @@ CREATE TABLE IF NOT EXISTS errata_cve (
     FOREIGN KEY (cve_id)
     REFERENCES cve (id)
 )TABLESPACE pg_default;
+
+CREATE INDEX ON errata_cve(cve_id);
+
 
 -- -----------------------------------------------------
 -- Table vmaas.errata_refs
