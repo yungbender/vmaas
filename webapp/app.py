@@ -24,7 +24,7 @@ from dbchange import DBChange
 import gen
 
 PUBLIC_API_PORT = 8080
-MAX_SERVERS = 2
+MAX_SERVERS = 1
 
 SPEC = APISpec(
     title='VMaaS Webapp',
@@ -73,6 +73,57 @@ class BaseHandler(tornado.web.RequestHandler):
         except ValueError:
             data = None
         return data
+
+    @gen.coroutine
+    def handle_post(self, api_endpoint):
+        """Takes care of validation of input and execution of POST methods."""
+        code = 400
+        data = self.get_post_data()
+        if data:
+            try:
+                res = api_endpoint.process_list(data)
+                code = 200
+            except ValidationError as validerr:
+                if validerr.absolute_path:
+                    res = '%s : %s' % (validerr.absolute_path.pop(), validerr.message)
+                else:
+                    res = '%s' % validerr.message
+                print('ValidationError: ' + res)
+                sys.stdout.flush()
+            except ValueError as valuerr:
+                res = str(valuerr)
+                print('ValueError: ' + res)
+                sys.stdout.flush()
+            except: # pylint: disable=bare-except
+                res = 'Unexpected error: %s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
+                code = 500
+                print(res)
+                sys.stdout.flush()
+        else:
+            res = 'Error: malformed input JSON.'
+            print(res)
+            sys.stdout.flush()
+
+        self.set_status(code)
+        self.write(res)
+        yield self.flush()
+
+
+class HealthHandler(BaseHandler):
+    """Handler class providing health status."""
+
+    @gen.coroutine
+    def get(self):  # pylint: disable=arguments-differ
+        """Get API status.
+           ---
+           description: Return API status
+           responses:
+             200:
+               description: Application is alive
+           tags:
+             - monitoring
+        """
+        yield self.flush()
 
 
 class ApiSpecHandler(BaseHandler):
@@ -146,7 +197,6 @@ class UpdatesHandlerGet(BaseHandler):
 class UpdatesHandlerPost(BaseHandler):
     """Handler for processing /updates POST requests."""
 
-    @gen.coroutine
     def post(self): # pylint: disable=arguments-differ
         """
         ---
@@ -187,37 +237,7 @@ class UpdatesHandlerPost(BaseHandler):
         tags:
           - updates
         """
-
-        code = 400
-        data = self.get_post_data()
-        if data:
-            try:
-                res = self.updates_api.process_list(data)
-                code = 200
-            except ValidationError as validerr:
-                if validerr.absolute_path:
-                    res = '%s : %s' % (validerr.absolute_path.pop(), validerr.message)
-                else:
-                    res = '%s' % validerr.message
-                print('ValidationError: ' + res)
-                sys.stdout.flush()
-            except ValueError as valuerr:
-                res = str(valuerr)
-                print('ValueError: ' + res)
-                sys.stdout.flush()
-            except: # pylint: disable=bare-except
-                res = 'Unexpected error: %s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
-                code = 500
-                print(res)
-                sys.stdout.flush()
-        else:
-            res = 'Error: malformed input JSON.'
-            print(res)
-            sys.stdout.flush()
-
-        self.set_status(code)
-        self.write(res)
-        yield self.flush()
+        self.handle_post(self.updates_api)
 
 
 class CVEHandlerGet(BaseHandler):
@@ -251,7 +271,6 @@ class CVEHandlerGet(BaseHandler):
 class CVEHandlerPost(BaseHandler):
     """Handler for processing /cves POST requests."""
 
-    @gen.coroutine
     def post(self): # pylint: disable=arguments-differ
         """
         ---
@@ -285,37 +304,7 @@ class CVEHandlerPost(BaseHandler):
         tags:
           - cves
         """
-
-        code = 400
-        data = self.get_post_data()
-        if data:
-            try:
-                res = self.cve_api.process_list(data)
-                code = 200
-            except ValidationError as validerr:
-                if validerr.absolute_path:
-                    res = '%s : %s' % (validerr.absolute_path.pop(), validerr.message)
-                else:
-                    res = '%s' % validerr.message
-                print('ValidationError: ' + res)
-                sys.stdout.flush()
-            except ValueError as valuerr:
-                res = str(valuerr)
-                print('ValueError: ' + res)
-                sys.stdout.flush()
-            except: # pylint: disable=bare-except
-                res = 'Unexpected error: %s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
-                code = 500
-                print(res)
-                sys.stdout.flush()
-        else:
-            res = 'Error: malformed input JSON.'
-            print(res)
-            sys.stdout.flush()
-
-        self.set_status(code)
-        self.write(res)
-        yield self.flush()
+        self.handle_post(self.cve_api)
 
 
 class ReposHandlerGet(BaseHandler):
@@ -350,7 +339,6 @@ class ReposHandlerGet(BaseHandler):
 class ReposHandlerPost(BaseHandler):
     """Handler for processing /repos POST requests."""
 
-    @gen.coroutine
     def post(self): # pylint: disable=arguments-differ
         """
         ---
@@ -381,36 +369,7 @@ class ReposHandlerPost(BaseHandler):
         tags:
           - repos
         """
-        code = 400
-        data = self.get_post_data()
-        if data:
-            try:
-                res = self.repo_api.process_list(data)
-                code = 200
-            except ValidationError as validerr:
-                if validerr.absolute_path:
-                    res = '%s : %s' % (validerr.absolute_path.pop(), validerr.message)
-                else:
-                    res = '%s' % validerr.message
-                print('ValidationError: ' + res)
-                sys.stdout.flush()
-            except ValueError as valuerr:
-                res = str(valuerr)
-                print('ValueError: ' + res)
-                sys.stdout.flush()
-            except: # pylint: disable=bare-except
-                res = 'Unexpected error: %s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
-                code = 500
-                print(res)
-                sys.stdout.flush()
-        else:
-            res = 'Error: malformed input JSON.'
-            print(res)
-            sys.stdout.flush()
-
-        self.set_status(code)
-        self.write(res)
-        yield self.flush()
+        self.handle_post(self.repo_api)
 
 
 class ErrataHandlerGet(BaseHandler):
@@ -445,7 +404,6 @@ class ErrataHandlerGet(BaseHandler):
 class ErrataHandlerPost(BaseHandler):
     """ /errata API handler """
 
-    @gen.coroutine
     def post(self): # pylint: disable=arguments-differ
         """
         ---
@@ -479,35 +437,7 @@ class ErrataHandlerPost(BaseHandler):
         tags:
           - errata
         """
-        code = 400
-        data = self.get_post_data()
-        if data:
-            try:
-                res = self.errata_api.process_list(data)
-                code = 200
-            except ValidationError as validerr:
-                if validerr.absolute_path:
-                    res = '%s : %s' % (validerr.absolute_path.pop(), validerr.message)
-                else:
-                    res = '%s' % validerr.message
-                print('ValidationError: ' + res)
-                sys.stdout.flush()
-            except ValueError as valuerr:
-                res = str(valuerr)
-                print('ValueError: ' + res)
-                sys.stdout.flush()
-            except: # pylint: disable=bare-except
-                res = 'Unexpected error: %s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
-                code = 500
-                print(res)
-                sys.stdout.flush()
-        else:
-            res = 'Error: malformed input JSON.'
-            print(res)
-            sys.stdout.flush()
-        self.set_status(code)
-        self.write(res)
-        yield self.flush()
+        self.handle_post(self.errata_api)
 
 
 def setup_apispec(handlers):
@@ -786,6 +716,7 @@ class Application(tornado.web.Application):
     """ main webserver application class """
     def __init__(self):
         handlers = [
+            (r"/api/v1/monitoring/health/?", HealthHandler),
             (r"/api/v1/apispec/?", ApiSpecHandler),
             (r"/api/v1/updates/?", UpdatesHandlerPost),
             (r"/api/v1/updates/(?P<nevra>[a-zA-Z0-9%-._:]+)", UpdatesHandlerGet),

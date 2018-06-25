@@ -3,8 +3,22 @@ Module to handle /repos API calls.
 """
 
 import re
+from jsonschema import validate
 
 from cache import REPO_NAME, REPO_URL, REPO_BASEARCH, REPO_RELEASEVER, REPO_PRODUCT, REPO_REVISION
+from utils import paginate
+
+JSON_SCHEMA = {
+    'type' : 'object',
+    'required': ['repository_list'],
+    'properties' : {
+        'repository_list': {
+            'type': 'array', 'items': {'type': 'string'}, 'minItems' : 1
+            },
+        'page_size' : {'type' : 'number'},
+        'page' : {'type' : 'number'}
+    }
+}
 
 
 class RepoAPI(object):
@@ -20,6 +34,12 @@ class RepoAPI(object):
 
         :returns: list of repository-labels matching the provided regex
         """
+        if not repo_regex.startswith('^'):
+            repo_regex = '^' + repo_regex
+
+        if not repo_regex.endswith('$'):
+            repo_regex = repo_regex + '$'
+
         return [label for label in self.cache.repolabel2ids if re.match(repo_regex, label)]
 
     def process_list(self, data):
@@ -30,7 +50,11 @@ class RepoAPI(object):
 
         :returns: json response with repository details
         """
+        validate(data, JSON_SCHEMA)
+
         repos = data.get('repository_list', None)
+        page = data.get("page", None)
+        page_size = data.get("page_size", None)
         repolist = {}
         if not repos:
             return repolist
@@ -39,7 +63,9 @@ class RepoAPI(object):
             # treat single-label like a regex, get all matching names
             repos = self.find_repos_by_regex(repos[0])
 
-        for label in repos:
+        repo_page_to_process, pagination_response = paginate(repos, page, page_size)
+
+        for label in repo_page_to_process:
             for repo_id in self.cache.repolabel2ids.get(label, []):
                 repo_detail = self.cache.repo_detail[repo_id]
                 repolist.setdefault(label, []).append({
@@ -55,5 +81,6 @@ class RepoAPI(object):
         response = {
             'repository_list': repolist,
         }
+        response.update(pagination_response)
 
         return response
