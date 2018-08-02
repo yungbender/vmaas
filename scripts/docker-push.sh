@@ -2,7 +2,7 @@
 
 set -e
 
-RELEASE_BRANCH="master"
+RELEASE_BRANCH="vmaas-0.6"
 DOCKER_COMPOSE_FILE="docker-compose.yml"
 
 # Variables from Travis CI environment

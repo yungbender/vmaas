@@ -2,7 +2,7 @@ FROM fedora:28
 
 # all environment variables are defined in conf/*.env
 # only VMAAS_VERSION is here because we want it to be hardcoded in the image
-ENV VMAAS_VERSION=latest
+ENV VMAAS_VERSION=0.6
 
 RUN dnf install -y dnf-plugins-core && dnf copr enable -y @vmaas/libs \
     && dnf install -y python3-apispec python3-psycopg2 python3-requests \
