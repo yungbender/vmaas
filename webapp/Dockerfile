@@ -3,7 +3,7 @@ MAINTAINER Gennadii Altukhov <galt@redhat.com>
 
 # all environment variables are defined in conf/reposcan.env
 # only VMAAS_VERSION is here because we want it to be hardcoded in the image
-ENV VMAAS_VERSION=latest
+ENV VMAAS_VERSION=0.8
 
 RUN dnf -y update \
     && dnf install -y dnf-plugins-core \
