@@ -5,7 +5,7 @@ MAINTAINER Gennadii Altukhov <galt@redhat.com>
 # only VMAAS_VERSION is here because we want it to be hardcoded in the image
 ENV VMAAS_VERSION=0.8
 
-RUN dnf -y update \
+RUN dnf -y --refresh update \
     && dnf install -y dnf-plugins-core \
     && dnf copr enable -y @vmaas/libs \
     && dnf -y install python3-tornado python3-psycopg2 python3-apispec postgresql python3-dateutil \
