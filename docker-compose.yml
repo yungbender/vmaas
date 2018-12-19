@@ -4,7 +4,7 @@ services:
   vmaas_database:
     container_name: vmaas-database
     build: ./database
-    image: vmaas/database:latest
+    image: vmaas/database:0.9
     restart: unless-stopped
     env_file:
       - ./conf/database-connection-admin.env
@@ -16,7 +16,7 @@ services:
   vmaas_websocket:
     container_name: vmaas-websocket
     build: ./websocket
-    image: vmaas/websocket:latest
+    image: vmaas/websocket:0.9
     restart: unless-stopped
     ports:
       - 8082:8082
@@ -24,7 +24,7 @@ services:
   vmaas_reposcan:
     container_name: vmaas-reposcan
     build: ./reposcan
-    image: vmaas/reposcan:latest
+    image: vmaas/reposcan:0.9
     restart: unless-stopped
     env_file:
       - ./conf/database-connection-writer.env
@@ -42,7 +42,7 @@ services:
   vmaas_webapp:
     container_name: vmaas-webapp
     build: ./webapp
-    image: vmaas/webapp:latest
+    image: vmaas/webapp:0.9
     restart: unless-stopped
     env_file:
       - ./conf/webapp.env
@@ -55,7 +55,7 @@ services:
   vmaas_apidoc:
     container_name: vmaas-apidoc
     build: ./apidoc
-    image: vmaas/apidoc:latest
+    image: vmaas/apidoc:0.9
     restart: unless-stopped
     env_file:
       - ./conf/apidoc.env
