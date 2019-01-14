@@ -62,7 +62,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "Content-Type")
 
     def options(self): # pylint: disable=arguments-differ
-        self.finish()
+        pass
 
     def get_post_data(self):
         """extract input JSON from POST request"""
@@ -113,7 +113,6 @@ class BaseHandler(tornado.web.RequestHandler):
 
         self.set_status(code)
         self.write(res)
-        yield self.flush()
 
     @gen.coroutine
     def handle_get(self, api_endpoint, api_version, param_name, param):
@@ -128,7 +127,6 @@ class BaseHandler(tornado.web.RequestHandler):
 
         self.set_status(code)
         self.write(result)
-        yield self.flush()
 
 
 class HealthHandler(BaseHandler):
@@ -143,7 +141,6 @@ class HealthHandler(BaseHandler):
              200:
                description: Application is alive
         """
-        yield self.flush()
 
 
 class ApiSpecHandler(BaseHandler):
@@ -160,7 +157,6 @@ class ApiSpecHandler(BaseHandler):
         """
         result = SPEC.to_dict()
         self.write(result)
-        yield self.flush()
 
 
 class VersionHandler(BaseHandler):
@@ -176,7 +172,6 @@ class VersionHandler(BaseHandler):
                description: Version of application returned
         """
         self.write(VMAAS_VERSION)
-        yield self.flush()
 
 
 class DBChangeHandler(BaseHandler):
@@ -199,7 +194,6 @@ class DBChangeHandler(BaseHandler):
         """
         result = self.dbchange_api.process()
         self.write(result)
-        yield self.flush()
 
 
 class UpdatesHandlerGet(BaseHandler):
