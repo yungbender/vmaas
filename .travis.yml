@@ -1,6 +1,6 @@
 branches:
   only:
-    - master
+    - vmaas-0.12
 sudo: required
 services:
   - docker
