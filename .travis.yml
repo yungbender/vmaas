@@ -1,10 +1,8 @@
-branches:
-  only:
-    - master
 sudo: required
 services:
   - docker
 notifications:
   email: false
 script:
+  - bash scripts/db_docs_generator.sh
   - docker-compose -f docker-compose.test.yml up --build --exit-code-from test
