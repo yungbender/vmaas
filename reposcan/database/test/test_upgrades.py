@@ -129,6 +129,7 @@ class TestUpgrades:
             assert dump_old == dump_new
         except AssertionError:
             diff = difflib.unified_diff(dump_old, dump_new)
+<<<<<<< HEAD
             diffs = "\n".join([x for x in diff])
             assert False, f"Diffs:\n{diffs}"
 
@@ -160,3 +161,8 @@ class TestUpgrades:
             diff = difflib.unified_diff(old_data_dump, new_data_dump)
             diffs = "\n".join([x for x in diff])
             assert False, f"Diff:\n{diffs}"
+=======
+            # pylint: disable=unnecessary-comprehension
+            diffs = "\n".join([x for x in diff])
+            assert False, f"Diffs:\n{diffs}"
+>>>>>>> chore: add database upgrades unit tests
