@@ -78,6 +78,6 @@ def create_pg(vmaas_user=VMAAS_USER, vmaas_pg=VMAAS_PG):
         conn.commit()
 
     # pylint: disable=invalid-name
-    Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True, on_initialized=_handler)
+    Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=False, on_initialized=_handler)
 
     return Postgresql

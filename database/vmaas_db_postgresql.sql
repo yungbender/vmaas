@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS db_version (
 )TABLESPACE pg_default;
 
 -- Increment this when editing this file
-INSERT INTO db_version (name, version) VALUES ('schema_version', 0);
+INSERT INTO db_version (name, version) VALUES ('schema_version', 1);
 
 -- -----------------------------------------------------
 -- evr type
@@ -805,6 +805,7 @@ CREATE TRIGGER db_upgrade_log_set_last_updated
   BEFORE INSERT OR UPDATE ON db_upgrade_log
   FOR EACH ROW EXECUTE PROCEDURE set_last_updated();
 
+CREATE TABLE korona();
 
 -- -----------------------------------------------------
 -- vmaas users permission setup:
